@@ -6,53 +6,66 @@
       shape="circle"
       icon="plus"
     />
-    <a-col class="h-full scroll-box" :span="6">
-      <a-menu
-        :default-selected-keys="[1]"
-        mode="inline"
-      >
-        <a-menu-item v-for="(item, index) in menu" :key="index + 1">
-          {{item}}
-        </a-menu-item>
-      </a-menu>
-    </a-col>
-    <a-col class="h-full scroll-box" :span="16">
-      <div class="classify-list">
-        <div>
-          <p class="sub-title">测试</p>
-          <div>
-            <a-button type="link">111</a-button>
-            <a-button type="link">111</a-button>
-            <a-button type="link">111</a-button>
+    <a-spin class="custom-spin" :spinning="loading">
+      <template v-if="tree.length">
+        <a-col class="h-full scroll-box" :span="5">
+          <a-menu
+            :default-selected-keys="defaultSelected"
+            mode="inline"
+          >
+            <a-menu-item v-for="item in tree" :key="item.classifyId">
+              {{item.name}}
+            </a-menu-item>
+          </a-menu>
+        </a-col>
+        <a-col class="h-full scroll-box" :span="19">
+          <div class="classify-list">
+            <div>
+              <p class="sub-title">测试</p>
+              <div>
+                <a-button type="link">111</a-button>
+                <a-button type="link">111</a-button>
+                <a-button type="link">111</a-button>
+              </div>
+            </div>
           </div>
-        </div>
+        </a-col>
+      </template>
+      <div v-else class="h-full" style="display:flex;align-items:center;justify-content:center">
+        <a-empty description="请先添加分类" />
       </div>
-    </a-col>
+    </a-spin>
   </a-row>
 </template>
 
 <script>
-import { ref, computed } from '@vue/composition-api'
+import { ref } from '@vue/composition-api'
+import { service } from '@/request'
+
 export default {
   name: 'Classification',
 
-  setup () {
-    const tree = ref([{
-      name: '数码办公',
-      children: [{
-        name: '3C/数码/配件',
-        children: [{
-          name: '录音笔'
-        }, {
-          name: 'use电脑周边'
-        }]
-      }]
-    }])
-    const menu = computed(() => tree.value.map(x => x.name))
+  setup (props, { root }) {
+    const loading = ref(false)
+    const tree = ref([])
+    const defaultSelected = ref([])
+    async function test () {
+      if (!loading.value) return ''
+      loading.value = true
+      const { code, data } = await service.get('/menus/getMenus')
+      loading.value = false
+      if (code !== '200') return root.$message.warn('分类获取失败，请刷新页面重试')
+      if (data.length) {
+        tree.value = data
+        defaultSelected.value = [data[0].classifyId]
+      }
+    }
+    test()
 
     return {
+      loading,
       tree,
-      menu
+      defaultSelected
     }
   }
 }
@@ -74,5 +87,11 @@ export default {
   bottom: 12px;
   right: 12px;
   z-index: 1;
+}
+.custom-spin {
+  height: 100%;
+  ::v-deep .ant-spin-container {
+    height: 100%;
+  }
 }
 </style>

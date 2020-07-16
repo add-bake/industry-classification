@@ -1,5 +1,5 @@
 <template>
-  <a-locale-provider :locale="locale">
+  <a-config-provider :locale="locale">
     <a-row class="h-full">
       <a-col class="h-full" :span="12">
         <classification />
@@ -8,7 +8,7 @@
         <a-empty />
       </a-col>
     </a-row>
-  </a-locale-provider>
+  </a-config-provider>
 </template>
 
 <script>
