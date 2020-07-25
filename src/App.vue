@@ -2,10 +2,10 @@
   <a-config-provider :locale="locale">
     <a-row class="h-full">
       <a-col class="h-full" :span="12">
-        <classification />
+        <classification @change="classifyId = arguments[0]" />
       </a-col>
-      <a-col class="h-full content-box" :span="12">
-        <a-empty />
+      <a-col class="h-full" :span="12">
+        <classify-content :id="classifyId" />
       </a-col>
     </a-row>
   </a-config-provider>
@@ -13,29 +13,29 @@
 
 <script>
 import Classification from './components/Classification.vue'
+import ClassifyContent from './components/ClassifyContent.vue'
 import zhCN from 'ant-design-vue/lib/locale-provider/zh_CN'
+import { ref } from '@vue/composition-api'
 
 export default {
   name: 'App',
 
   components: {
-    Classification
+    Classification,
+    ClassifyContent
   },
 
-  data () {
+  setup () {
+    const classifyId = ref('')
+
     return {
-      locale: zhCN
+      locale: zhCN,
+      classifyId
     }
   }
 }
 </script>
 
 <style lang="less">
-.content-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 1px solid #eee;
-  font-size: 24px;
-}
+
 </style>
